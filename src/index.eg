@@ -1,0 +1,22 @@
+
+require:
+   path
+
+install{@, options} =
+   @register-resources with {
+      "bootstrap.css" => {
+         path = path.join{__dirname, "..", "bootstrap-3.3.6-dist/css/bootstrap.min.css"}
+         contents = true
+         type = .css
+         method = .head
+      }
+   }
+
+main{*match} =
+   {@, options = {=}} when @is-quaint-engine ->
+      install{@, options}
+   {options = {=}} ->
+      {@} -> main{@, options}
+
+provide = main
+
