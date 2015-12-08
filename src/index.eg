@@ -13,8 +13,10 @@ special = new Set with {
    ".dismissible"
 }
 
-enhance{tags, cls} =
-   {'div', '.{cls}'} ++
+root = path.join{__dirname, "..", "bootstrap-3.3.6-dist/"}
+
+enhance{tags, cls, t = 'div'} =
+   {t, '.{cls}'} ++
       tags each match tag ->
          when special.has{tag} ->
             '.{cls}-{tag[1..]}'
@@ -24,15 +26,41 @@ enhance{tags, cls} =
 install{@, options} =
 
    @register-resources with {
-      "bootstrap.css" => {
-         path = path.join{__dirname, "..", "bootstrap-3.3.6-dist/css/bootstrap.min.css"}
+      "bootstrap/css/bootstrap.css" => {
+         path = path.join{root, "css/bootstrap.min.css"}
          contents = true
          type = .css
+         method = .head
+         dependencies = {
+            "bootstrap/fonts" => #copy{path.join{root, "fonts/"}}
+         }
+      }
+      "jquery.js" => {
+         path = path.join{__dirname, "..", "jquery-1.11.3.min.js"}
+         contents = true
+         type = .js
+         method = .head
+      }
+      "bootstrap/js/bootstrap.js" => {
+         path = path.join{root, "js/bootstrap.min.js"}
+         contents = true
+         type = .js
          method = .head
       }
    }
 
    @register-components with {
+
+      primary{tags, props, children} =
+         @components.alert{{".primary"} ++ tags, props, children}
+      success{tags, props, children} =
+         @components.alert{{".success"} ++ tags, props, children}
+      info{tags, props, children} =
+         @components.alert{{".info"} ++ tags, props, children}
+      warning{tags, props, children} =
+         @components.alert{{".warning"} ++ tags, props, children}
+      danger{tags, props, children} =
+         @components.alert{{".danger"} ++ tags, props, children}
 
       alert{tags, props, children} =
          ENode with
@@ -48,6 +76,14 @@ install{@, options} =
                   else: {}
                children
             }
+
+      glyph{tags, props, children} =
+         {name >> name.trim{}} = children
+         span %
+            class = 'glyphicon glyphicon-{name}'
+
+      label{tags, props, children} =
+         ENode{enhance{tags, .label, .span}, props, children}
 
       panel{tags, props, children} =
          {title, *body} = children each
@@ -65,6 +101,9 @@ install{@, options} =
                div.panel-body %
                   body
             }
+
+      table{tags, props, children} =
+         ENode{{'table', '.table', *tags}, props, children}
    }
 
 main{*match} =
