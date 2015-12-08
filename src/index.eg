@@ -2,7 +2,27 @@
 require:
    path
 
+special = new Set with {
+   ".default"
+   ".primary"
+   ".success"
+   ".info"
+   ".warning"
+   ".danger"
+
+   ".dismissible"
+}
+
+enhance{tags, cls} =
+   {'div', '.{cls}'} ++
+      tags each match tag ->
+         when special.has{tag} ->
+            '.{cls}-{tag[1..]}'
+         else ->
+            tag
+
 install{@, options} =
+
    @register-resources with {
       "bootstrap.css" => {
          path = path.join{__dirname, "..", "bootstrap-3.3.6-dist/css/bootstrap.min.css"}
@@ -10,6 +30,41 @@ install{@, options} =
          type = .css
          method = .head
       }
+   }
+
+   @register-components with {
+
+      alert{tags, props, children} =
+         ENode with
+            enhance{tags, .alert}
+            props
+            {
+               if ".dismissible" in tags:
+                  then:
+                     button.close %
+                        type = .button
+                        "data-dismiss" = .alert
+                        raw % "&times;"
+                  else: {}
+               children
+            }
+
+      panel{tags, props, children} =
+         {title, *body} = children each
+            child when not String? child or child.trim{} != "" ->
+               child
+         ENode with
+            enhance{tags, .panel}
+            props
+            {
+               div.panel-heading %
+                  match title:
+                     ENode? {=> tags, => props, => children} ->
+                        ENode{{*tags, ".panel-title"}, props, children}
+                     else -> title
+               div.panel-body %
+                  body
+            }
    }
 
 main{*match} =
