@@ -50,6 +50,11 @@ install{@, options} =
    }
 
    @register-components with {
+      ;; TODO
+      ;; !!glyph
+      ;; badge, breadcrumbs, component
+      ;; divider, dropdown, dropup, embed, jumbotron
+      ;; list-group, media, nav, pills, tabs
 
       primary{tags, props, children} =
          @components.alert{{".primary"} ++ tags, props, children}
