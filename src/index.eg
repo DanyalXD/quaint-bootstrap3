@@ -1,7 +1,9 @@
 
 require:
    path
-   quaint -> etools -> enode-to-data
+   quaint -> etools ->
+      enode-to-data
+      trim
 
 var gid = 0
 
@@ -164,11 +166,11 @@ install{@, options} =
                      span.icon-bar %
                      span.icon-bar %
                      span.icon-bar %
-                  match brand:
+                  match trim{brand}:
                      [a %]? {=> tags, => props, => children} ->
                         ENode{tags ++ {".navbar-brand"}, props, children}
                      else ->
-                        brand
+                        .navbar-brand % brand
                .collapse.navbar-collapse %
                   id = id
                   ul.nav.navbar-nav %
