@@ -2,7 +2,7 @@
 quaint-bootstrap
 ================
 
-Use Bootstrap's default theme with Quaint.
+Use Bootstrap themes with Quaint.
 
 ## Usage
 
@@ -26,6 +26,31 @@ container %
     This is a panel!
 ```
 
+## Options
+
+### css
+
+If you already have a `bootstrap` css file you want to use, you can
+provide its path for that option.
+
+You can also use any theme on [bootswatch](https://bootswatch.com/) if
+you prefix it with `@`. For instance, write `@united` to use the
+[united](https://bootswatch.com/united/) theme.
+
+### example
+
+Put this in your `quaint.json` to include the `bootstrap` plugin and
+the `darkly` bootswatch theme.
+
+```
+"plugins": {
+    "bootstrap": {
+        "css": "@darkly"
+    }
+}
+```
+
+
 
 ## Components
 
@@ -33,7 +58,7 @@ container %
 
 * `alert`
 * `danger`
-* `glyph`
+* `glyph` (also `!!glyph`)
 * `info`
 * `label`
 * `panel`
