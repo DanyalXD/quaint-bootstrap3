@@ -1,6 +1,9 @@
 
 require:
    path
+   quaint -> etools -> enode-to-data
+
+var gid = 0
 
 special = new Set with {
    ".default"
@@ -11,6 +14,9 @@ special = new Set with {
    ".danger"
 
    ".dismissible"
+
+   ".lg"
+   ".sm"
 }
 
 root = path.join{__dirname, "..", "bootstrap-3.3.6-dist/"}
@@ -22,6 +28,52 @@ enhance{tags, cls, t = 'div'} =
             '.{cls}-{tag[1..]}'
          else ->
             tag
+
+enhancer{cls, t = 'div'}{tags, props, children} =
+   ENode{enhance{tags, cls, t}, props, children}
+
+
+_dropdown{direction, tags, props, {title, enode-to-data! list}} =
+   div %
+      class = direction
+      button.btn.btn-default.dropdown-toggle %
+         type = .button
+         "data-toggle" = .dropdown
+         "aria-haspopup" = "true"
+         "aria-expanded" = "true"
+         title
+         span.caret %
+      ul.dropdown-menu %
+         list each match element ->
+            {R"^[ \n]*$"?} ->
+               li.divider %
+            else ->
+               li % element
+
+_tabs{type, tags, props, children} =
+   {tabs-map >> enode-to-data{tabs-map, true}} =
+      children each child when not R"[ \n]+"? child ->
+         child
+   tabs = enumerate{consume! tabs-map.entries{}} each {i, {title, body}} ->
+      {i, title, body, '__btab__{gid += 1}'}
+   {
+      ul.nav %
+         class = 'nav-{type}'
+         tabs each {i, title, _, id} ->
+            li %
+               class = if{i === 0, .active, ""}
+               a %
+                  "data-toggle" = .tab
+                  href = '#{id}'
+                  title
+      .tab-content %
+         tabs each {i, _, contents, id} ->
+            div.tab-pane %
+               class = if{i === 0, .active, ""}
+               id = id
+               contents
+   }
+
 
 install{@, options} =
 
@@ -51,10 +103,9 @@ install{@, options} =
 
    @register-components with {
       ;; TODO
-      ;; !!glyph
-      ;; badge, breadcrumbs, component
-      ;; divider, dropdown, dropup, embed, jumbotron
-      ;; list-group, media, nav, pills, tabs
+      ;; badge, breadcrumbs
+      ;; embed, jumbotron
+      ;; list-group, media
 
       primary{tags, props, children} =
          @components.alert{{".primary"} ++ tags, props, children}
@@ -82,13 +133,47 @@ install{@, options} =
                children
             }
 
+      container = enhancer{.container}
+
+      divider = enhancer{.divider}
+
+      dropdown{tags, props, children} =
+         _dropdown{.dropdown, tags, props, children}
+
+      dropup{tags, props, children} =
+         _dropdown{.dropup, tags, props, children}
+
       glyph{tags, props, children} =
          {name >> name.trim{}} = children
          span %
             class = 'glyphicon glyphicon-{name}'
 
-      label{tags, props, children} =
-         ENode{enhance{tags, .label, .span}, props, children}
+      label = enhancer{.label, .span}
+
+      ;; TODO: IMPERFECT
+      nav{tags, props, {*brand, enode-to-data! list}} =
+         id = '__bnav__{gid += 1}'
+         nav.navbar.navbar-default %
+            .container-fluid %
+               .navbar-header %
+                  button.navbar-toggle.collapsed %
+                     type = .button
+                     "data-toggle" = .collapse
+                     "data-target" = '#{id}'
+                     "aria-expanded" = .false
+                     span.icon-bar %
+                     span.icon-bar %
+                     span.icon-bar %
+                  match brand:
+                     [a %]? {=> tags, => props, => children} ->
+                        ENode{tags ++ {".navbar-brand"}, props, children}
+                     else ->
+                        brand
+               .collapse.navbar-collapse %
+                  id = id
+                  ul.nav.navbar-nav %
+                     list each entry ->
+                        li % entry
 
       panel{tags, props, children} =
          {title, *body} = children each
@@ -107,9 +192,23 @@ install{@, options} =
                   body
             }
 
+      pills{tags, props, children} =
+         _tabs{.pills, tags, props, children}
+
       table{tags, props, children} =
          ENode{{'table', '.table', *tags}, props, children}
+
+      tabs{tags, props, children} =
+         _tabs{.tabs, tags, props, children}
+
+      well = enhancer{.well}
    }
+
+   @register-rules with {
+      "!! \\glyph"{engine, {=> glyph}} =
+         glyph % glyph.raw{}
+   }
+
 
 main{*match} =
    {@, options = {=}} when @is-quaint-engine ->
