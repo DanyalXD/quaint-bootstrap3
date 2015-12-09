@@ -22,6 +22,7 @@ special = new Set with {
 }
 
 root = path.join{__dirname, "..", "bootstrap-3.3.6-dist/"}
+swatch = path.join{__dirname, "..", "bootswatch/"}
 
 enhance{tags, cls, t = 'div'} =
    {t, '.{cls}'} ++
@@ -81,7 +82,14 @@ install{@, options} =
 
    @register-resources with {
       "bootstrap/css/bootstrap.css" => {
-         path = path.join{root, "css/bootstrap.min.css"}
+         path =
+            match options.css as f:
+               undefined? ->
+                  path.join{root, "css/bootstrap.min.css"}
+               R"^@(.*)"! {_, name} ->
+                  path.join{swatch, '{name}/bootstrap.min.css'}
+               else ->
+                  f
          contents = true
          type = .css
          method = .head
