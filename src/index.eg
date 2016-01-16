@@ -4,6 +4,7 @@ require:
    quaint -> etools ->
       enode-to-data
       trim
+   quaint-nav
 
 var gid = 0
 
@@ -70,6 +71,7 @@ _tabs{type, tags, props, children} =
                   href = '#{id}'
                   title
       .tab-content %
+         class = 'from-{type}'
          tabs each {i, _, contents, id} ->
             div.tab-pane %
                class = if{i === 0, .active, ""}
@@ -78,17 +80,105 @@ _tabs{type, tags, props, children} =
    }
 
 
-install{@, options} =
+default-template = """
+doctype :: html
+html %
+  head %
+    title %
+      meta::title !! Untitled
+    meta %
+      http-equiv = Content-type
+      content = text/html
+      charset = UTF-8
+    meta %
+      name = viewport
+      content = width=device-width, initial-scale=1
+  body % {body}
+"""
+
+nav-template = """
+template :: @minimal
+bsnav :: dump!
+container % {body}
+"""
+
+defaults = {
+   nav-container-class = "container-fluid"
+}
+
+install{@, _options} =
+   options = defaults & _options
+
+   qn-options = {
+      ulonly = true
+      wrap-dropdown{title} =
+         a.dropdown-toggle %
+            href = "#"
+            "data-toggle" = .dropdown
+            role = .button
+            "aria-haspopup" = .true
+            "aria-expanded" = .false
+            title
+            span.caret %
+      wrap-element{match elem} =
+         [a %]? or {"", [a %]?} ->
+            elem
+         else ->
+            p.navbar-text % elem
+   }
+   quaint-nav{@, qn-options}
+
+   @register-resolvers with {
+      template = {
+         "@minimal" => default-template
+         "@bootstrap" => nav-template
+      }
+   }
+
+   @register-macros with {
+      brand{engine, body} =
+         engine.macros.store{engine, "bootstrap-brand", body}
+
+      bsnav{engine, body} =
+         if body.raw{}.trim{} !== "dump!":
+            throw E.quaint-bootstrap with
+               'bsnav:: macro can only have "dump!" as its body'
+         nav-id = "the-collapsible-nav"
+         nav.navbar.navbar-default %
+            div %
+               class = options.nav-container-class
+               .navbar-header %
+                  button.navbar-toggle.collapsed %
+                     type = .button
+                     "data-toggle" = .collapse
+                     "data-target" = '#{nav-id}'
+                     "aria-expanded" = .false
+                     span.sr-only % "Toggle navigation"
+                     span.icon-bar %
+                     span.icon-bar %
+                     span.icon-bar %
+                  a.navbar-brand %
+                     engine.macros.dump{engine, "bootstrap-brand"}
+               .collapse.navbar-collapse %
+                  id = nav-id
+                  inherit.nav.navbar-nav.navbar-left %
+                     quaint-nav.dump-nav{@, "left", qn-options}
+                  inherit.nav.navbar-nav %
+                     quaint-nav.dump-nav{@, "main", qn-options}
+                  inherit.nav.navbar-nav.navbar-right %
+                     quaint-nav.dump-nav{@, "right", qn-options}
+   }
 
    @register-resources with {
       "bootstrap/css/bootstrap.css" => {
          path =
-            match options.css as f:
-               undefined? ->
+            match options.theme as f:
+               undefined? or "@default" ->
                   path.join{root, "css/bootstrap.min.css"}
                R"^@(.*)"! {_, name} ->
                   path.join{swatch, '{name}/bootstrap.min.css'}
                else ->
+                  ;; TODO: resolve f at the proper moment, when options given
                   f
          contents = true
          type = .css
@@ -116,7 +206,6 @@ install{@, options} =
       ;; badge, breadcrumbs
       ;; embed, jumbotron
       ;; list-group, media
-
       primary{tags, props, children} =
          @components.alert{{".primary"} ++ tags, props, children}
       success{tags, props, children} =
@@ -160,30 +249,30 @@ install{@, options} =
 
       label = enhancer{.label, .span}
 
-      ;; TODO: IMPERFECT
-      nav{tags, props, {*brand, enode-to-data! list}} =
-         id = '__bnav__{gid += 1}'
-         nav.navbar.navbar-default %
-            .container-fluid %
-               .navbar-header %
-                  button.navbar-toggle.collapsed %
-                     type = .button
-                     "data-toggle" = .collapse
-                     "data-target" = '#{id}'
-                     "aria-expanded" = .false
-                     span.icon-bar %
-                     span.icon-bar %
-                     span.icon-bar %
-                  match trim{brand}:
-                     [a %]? {=> tags, => props, => children} ->
-                        ENode{tags ++ {".navbar-brand"}, props, children}
-                     else ->
-                        .navbar-brand % brand
-               .collapse.navbar-collapse %
-                  id = id
-                  ul.nav.navbar-nav %
-                     list each entry ->
-                        li % entry
+      ;; ;; TODO: IMPERFECT
+      ;; nav{tags, props, {*brand, enode-to-data! list}} =
+      ;;    id = '__bnav__{gid += 1}'
+      ;;    nav.navbar.navbar-default %
+      ;;       .container-fluid %
+      ;;          .navbar-header %
+      ;;             button.navbar-toggle.collapsed %
+      ;;                type = .button
+      ;;                "data-toggle" = .collapse
+      ;;                "data-target" = '#{id}'
+      ;;                "aria-expanded" = .false
+      ;;                span.icon-bar %
+      ;;                span.icon-bar %
+      ;;                span.icon-bar %
+      ;;             match trim{brand}:
+      ;;                [a %]? {=> tags, => props, => children} ->
+      ;;                   ENode{tags ++ {".navbar-brand"}, props, children}
+      ;;                else ->
+      ;;                   .navbar-brand % brand
+      ;;          .collapse.navbar-collapse %
+      ;;             id = id
+      ;;             ul.nav.navbar-nav %
+      ;;                list each entry ->
+      ;;                   li % entry
 
       panel{tags, props, children} =
          {title, *body} = children each
