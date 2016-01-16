@@ -2,7 +2,14 @@
 quaint-bootstrap
 ================
 
-Use Bootstrap themes with Quaint.
+Use [Bootstrap](http://getbootstrap.com/) themes with Quaint. This
+package also includes:
+
+* [Glyphicons](http://glyphicons.com/)
+* [Bootswatch](https://bootswatch.com/)
+
+Not all Bootstrap features are currently supported, but well enough to
+be worthwhile.
 
 
 ## Install
