@@ -132,6 +132,7 @@ install{@, _options} =
       template = {
          "@minimal" => default-template
          "@bootstrap" => nav-template
+         "@bootstrap3" => nav-template
       }
    }
 

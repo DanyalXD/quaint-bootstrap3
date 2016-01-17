@@ -1,12 +1,12 @@
 
-quaint-bootstrap
-================
+quaint-bootstrap3
+=================
 
-Use [Bootstrap](http://getbootstrap.com/) themes with Quaint. This
-package also includes:
+Use [Bootstrap v3.x](http://getbootstrap.com/) themes with
+Quaint. This package also includes:
 
-* [Glyphicons](http://glyphicons.com/)
-* [Bootswatch](https://bootswatch.com/)
+* [Glyphicons](http://glyphicons.com/), the icons packaged with Bootstrap.
+* [Bootswatch](https://bootswatch.com/), about a dozen free styles.
 
 Not all Bootstrap features are currently supported, but well enough to
 be worthwhile.
@@ -23,7 +23,7 @@ This configuration entry must be added in the `plugins` field of
 `quaint.json`:
 
 ```json
-"bootstrap": {
+"bootstrap3": {
   "navContainerClass": "container-fluid",
   "theme": "@superhero",
 }
@@ -33,7 +33,7 @@ This configuration entry must be added in the `plugins` field of
 ## Sample use
 
 ```quaint
-template :: @bootstrap
+template :: @bootstrap3
 
 brand ::
   @@@image:brand.svg
@@ -60,9 +60,9 @@ info %
 
 ## Template
 
-I recommend usingthe **`@bootstrap`** template, which the package
+I recommend usingthe **`@bootstrap3`** template, which the package
 helpfully defines. If you wish to do something non-standard, note that
-the `@bootstrap` package is equivalent to the following definition:
+the `@bootstrap3` package is equivalent to the following definition:
 
 ```quaint
 template :: @minimal
@@ -97,13 +97,13 @@ html %
 
 `brand :: expression` defines your site or blog's brand
 image/logo/text/etc. It can be any Quaint expression and will be
-inserted in the navbar if you use the `@bootstrap` template.
+inserted in the navbar if you use the `@bootstrap3` template.
 
 
 ### `bsnav`
 
 The directive `bsnav ::` inserts the navbar that you filled using
-`nav`. You do not need to use this if you use the `@bootstrap`
+`nav`. You do not need to use this if you use the `@bootstrap3`
 template.
 
 
