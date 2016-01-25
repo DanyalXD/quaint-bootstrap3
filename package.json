@@ -19,9 +19,9 @@
   "dependencies": {
     "chalk": "^1.1.1",
     "earlgrey-runtime": ">=0.0.11",
-    "inquirer-promise": "0.0.1",
+    "inquirer-promise": "0.0.3",
     "quaint": ">=0.0.14",
-    "quaint-nav": ">=0.0.0"
+    "quaint-nav": ">=0.0.1"
   },
   "devDependencies": {
     "earlgrey": ">=0.0.13",
