@@ -14,7 +14,9 @@ be worthwhile.
 
 ## Install
 
-    npm install quaint-bootstrap -g
+    quaint --setup bootstrap3
+
+Follow the instructions.
 
 
 ## Sample configuration
@@ -25,7 +27,7 @@ This configuration entry must be added in the `plugins` field of
 ```json
 "bootstrap3": {
   "navContainerClass": "container-fluid",
-  "theme": "@superhero",
+  "theme": "@superhero"
 }
 ```
 
@@ -134,7 +136,7 @@ nav right ::
 
 ## Components
 
-`quaint-bootstrap` wraps some bootstrap components so that they can be
+`quaint-bootstrap3` wraps some bootstrap components so that they can be
 used more easily. Not all components are wrapped at the moment, but
 it's relatively easy to do so. If you need something that's missing,
 file an issue and I'll look into it.
@@ -157,7 +159,7 @@ List of components:
 * `tabs`
 * `warning`
 
-The [showcase](https://github.com/breuleux/quaint-bootstrap/blob/master/showcase.q)
+The [showcase](https://github.com/breuleux/quaint-bootstrap3/blob/master/showcase.q)
 shows you how to use the components.
 
 
