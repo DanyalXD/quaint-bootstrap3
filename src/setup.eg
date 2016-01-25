@@ -1,11 +1,15 @@
 
 require:
    inquirer-promise as inq
+   chalk
    path, fs
 
 swatch = path.join{__dirname, "..", "bootswatch/"}
 
 async quaint-setup{config, instructions} =
+
+   url = "https://github.com/breuleux/quaint-bootstrap3"
+   print 'Plugin documentation: {chalk.bold.cyan{url}}'
 
    config.plugins.bootstrap3 or= {=}
 
