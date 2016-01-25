@@ -10,7 +10,8 @@
   "keywords": [
     "quaint",
     "quaint-plugin",
-    "bootstrap"
+    "bootstrap",
+    "bootstrap3"
   ],
   "author": "Olivier Breuleux",
   "license": "MIT",
@@ -19,7 +20,7 @@
     "chalk": "^1.1.1",
     "earlgrey-runtime": ">=0.0.11",
     "inquirer-promise": "0.0.1",
-    "quaint": ">=0.0.13",
+    "quaint": ">=0.0.14",
     "quaint-nav": ">=0.0.0"
   },
   "devDependencies": {
