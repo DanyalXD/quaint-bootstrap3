@@ -1,0 +1,42 @@
+
+require:
+   inquirer-promise as inq
+   path, fs
+
+swatch = path.join{__dirname, "..", "bootswatch/"}
+
+async quaint-setup{config, instructions} =
+
+   config.plugins.bootstrap3 or= {=}
+
+   if not config.templates.default??.starts-with{"@bootstrap"}:
+      uset = await inq.confirm{"Set the @bootstrap3 template as default?", {default = true}}
+      if uset:
+         config.templates.default = "@bootstrap3"
+
+   theme = await inq.list{"What theme do you want to use?", themes, {default = 1}} where
+      themes = {
+         "Choose a file..."
+         "@default"
+         new inq.Separator{}
+         *[
+            fs.readdir-sync{swatch} each name ->
+               stat = fs.lstat-sync{path.join{swatch, name}}
+               if stat.is-directory{} and name !== "default":
+                  '@{name}'
+               else:
+                  continue
+         ]
+         new inq.Separator{}
+      }
+
+   match theme:
+      R"^Choose"? ->
+         p = await inq.input{'Path of the stylesheet relative to {config.content-root}/:'}
+         config.plugins.bootstrap3.theme = p
+      else ->
+         config.plugins.bootstrap3.theme = theme
+
+   config.plugins.bootstrap3.theme or= "@default"
+
+provide = quaint-setup
